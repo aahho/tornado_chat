@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<!-- saved from url=(0072)file:///Users/ankurmishra/Personal/chat_tornado/templates/user_view.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Required meta tags -->
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="./Aahho Messenger_files/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="./Aahho Messenger_files/style.css">
+    <link rel="shortcut icon" type="image/png" href="file:///Users/ankurmishra/Personal/chat_tornado/static/images/chat-logo.png">
+    <title>Aahho Messenger</title>
+  </head>
+  <body>
+    <div class="card text-center body-alignment">
+      <div class="card-header">
+        <ul class="row nav nav-pills card-header-pills">
+          <li class="nav-item">
+            <a class="nav-link" href="file:///Users/ankurmishra/Personal/chat_tornado/templates/index.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="file:///Users/ankurmishra/Personal/chat_tornado/templates/user_view.html#">User</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="file:///Users/ankurmishra/Personal/chat_tornado/templates/channel_view.html">Channel</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="file:///Users/ankurmishra/Personal/chat_tornado/templates/log_view.html">Logs</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled nav-button-float-right" href="file:///Users/ankurmishra/Personal/chat_tornado/templates/user_view.html#">Disabled</a>
+          </li>
+        </ul>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6" style="border-right: 1px #ccc solid;">
+            <table class="table" id="user-list-table">
+              <thead class="thead-dark">
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Display Name</th>
+                  <th scope="col">Username</th>
+                  <th scope="col">Joined On</th>
+                </tr>
+              </thead>
+              <tbody id="user-list"><tr><th scope="row">1</th><td>Ankur Mishra</td><td>ankur-mishra</td><td>2018-06-15 16:49:13.812201</td></tr><tr><th scope="row">2</th><td>Ankur Mishra</td><td>ankur</td><td>2018-06-15 19:44:58.909555</td></tr><tr><th scope="row">3</th><td>Ankur Mishra</td><td>ankur1</td><td>2018-06-15 19:54:39.670702</td></tr></tbody>
+            </table>
+          </div>
+          <div class="col-6">
+            <div class="form-label">
+              <label class="register-message-label">Register Here</label>
+            </div>
+            <form style="padding: 20px;">
+              <div class="col-12" style="margin-bottom: 20px;">
+                <input type="text" name="" class="text-field" placeholder="Enter Full Name Here">
+              </div>
+              <div class="col-md-12" style="margin-bottom: 20px;">
+                <input type="text" name="" class="text-field" placeholder="Enter Username Here"> 
+              </div>
+              <div class="col-12">
+                <button class="btn btn-primary col-md-8" value="submit" style="font-size: 14px;"> Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="alert-box" class="alert alert-dismissible fade show alert-alignment alert-success" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+       <div id="alert-content"><strong>SUCCESS - </strong>Successfully Responded</div> 
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="./Aahho Messenger_files/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="./Aahho Messenger_files/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="./Aahho Messenger_files/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script>
+      var host = 'http://127.0.0.1:8080/'
+
+      function get_user() {
+        var xhttp = new XMLHttpRequest();
+        var alert_message = document.getElementById('alert-content');
+        var response = {};
+
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == XMLHttpRequest.DONE) {
+              if(this.status == 200) {
+                response = JSON.parse(xhttp.response);
+                var user_table = document.getElementById('user-list-table').getElementsByTagName('tbody')[0];
+                for (var i = 0; i < response.data.length; i++) {
+                  var row = user_table.insertRow(i);
+                  var text = "<th scope='row'>"+ (i + 1) +'</th>' + "<td>"+response.data[i].display_name + "</td>" + "<td>"+response.data[i].username + "</td>" +"<td>"+response.data[i].created_at+ "</td>"
+                  row.innerHTML = text;
+                }
+                alert_message.innerHTML = '<strong>'+response.notification.type.toUpperCase()+' - </strong>'+ response.notification.message
+                document.getElementById("alert-box").classList.add("alert-success");
+              } else if (this.status == 400) {
+                alert_message.innerHTML = '<strong>'+response.notification.type.toUpperCase()+' - </strong>'+ response.notification.message
+                document.getElementById("alert-box").classList.add("alert-warning");
+              } else {
+                alert_message.innerHTML = '<strong> ERROR - </strong> Something Went Wrong'
+                document.getElementById("alert-box").classList.add("alert-danger");
+              }
+          }
+        }
+        xhttp.open("GET", host+'user/', true);
+        xhttp.send();
+      }
+      window.onload = get_user;
+    </script>
+  
+</body></html>

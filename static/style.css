@@ -1,0 +1,84 @@
+#chat {
+    float: left;
+}
+
+#msgList {
+    border-width: 1px;
+    border: solid;
+    height: 192px;
+    width: 570px;
+    overflow:scroll;
+}
+#card-body{
+    background-image: url('../static/images/web-developer.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+#nickList {
+    float:left;
+}
+
+.body-alignment {
+    margin-left: 3%;
+    margin-right: 3%;
+	margin-top: 3%;
+	background-color: #f9f8f8;
+}
+
+.alert-alignment {
+    position: fixed;
+    bottom: 35px;
+    left: 3%;
+    z-index: 200;
+    box-shadow: 2px 1px 10px #dcdcdc;
+    padding: 10px 4rem;
+    text-align: center;
+}
+
+.nav-button-float-right {
+	position: absolute;
+    right: 0px;
+}
+.text-field{
+    border: none;
+    background: #eeeeee6b;
+    border-bottom: 1px solid #8a8989;
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+}
+.text-field:focus {
+    outline-offset: 0px;
+    outline: none;
+}
+.input-label{
+    text-align: left;
+    font-size: 14px;
+    padding-top: 10px;
+}
+.form-label {
+    background-color: #22252a;
+    width: 100%;
+    height: 38px;
+}
+.form-channel-label {
+    background-color: #22252a;
+    width: 100%;
+    height: 38px;
+}
+.register-message-label {
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 8px;
+}
+.card-body{
+    height: calc(100vh - 200px);
+}
+.user-view-div {
+    overflow-y: auto; 
+    height: calc(100vh - 250px);
+    border-right: 1px #ccc solid;
+}

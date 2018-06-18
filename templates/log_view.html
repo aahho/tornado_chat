@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../static/style.css">
+    <link rel="shortcut icon" type="image/png" href="../static/images/chat-logo.png" />
+    <title>Aahho Messenger</title>
+  </head>
+  <body>
+    <div class="card text-center body-alignment">
+      <div class="card-header">
+        <ul class="row nav nav-pills card-header-pills">
+          <li class="nav-item">
+            <a class="nav-link" href="/view/?template=index">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/view/?template=user_view">User</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/view/?template=channel_view">Channel</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Chat</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled nav-button-float-right" href="#">Powered By Aahho</a>
+          </li>
+        </ul>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-6">
+            <div class="form-channel-label">
+              <label class="register-message-label">Join Channel</label>
+            </div>
+            <form style="padding: 40px;">
+              <div class="col-12" style="margin-bottom: 40px;">
+                <input type="text" id="txtRoom" onkeyup="toggle_button();" class="text-field" placeholder="Enter Channel Name Here" required>
+              </div>
+              <div class="col-12" style="margin-bottom: 40px;">
+                <input type="text" id="txtNickname" onkeyup="toggle_button();" class="text-field" placeholder="Enter Your Username" required>
+              </div>
+              <div class="col-12">
+                <button id="button" type="button" class="btn btn-primary col-md-8"  onclick="start_chat();" style="font-size: 14px;"> Start Chat
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="col-md-6" style="border-right: 1px #ccc solid;">
+            <div class="form-channel-label">
+              <label id="message-label-message" class="register-message-label" id="channel-label">No Channel Joined Yet</label>
+              <div id="message-block"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="alert-box" class="alert alert-dismissible fade show alert-alignment" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <!-- <span aria-hidden="true">&times;</span> -->
+      </button>
+       <div id="alert-content"></div> 
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script src="../static/underscore-min.js"></script>
+    <script src="../static/zepto.min.js"></script>
+    <!-- <script src="../static/chat.js"></script> -->
+    <script src="../static/hosts.js"></script>
+    
+    <script>
+      // var host = 'http://127.0.0.1:8080/'
+      var channel_id = null;
+      var client_id = null;
+      var alert_message = document.getElementById('alert-content');
+
+      window.onload = function(){
+        document.getElementById("button").disabled = true;
+      };
+      function openChatBox(response, txtRoom){
+          if (client_id != null) {
+            ws.close();
+          }
+          var message_block = document.getElementById('message-block')
+          var message_label_message = document.getElementById('message-label-message')
+          message_block.innerHTML = '<div id="chat"><div id="msgList"></div><br> <input id="txtMsg" type="text" name="msg" style="width: 80%;float: left;border: 1px solid #ccc;padding: 5px;" placeholder="Enter your message"><button type="button" id="btnSend" value="Send" class="btn btn-primary" disabled="disabled" style="width: 18%;float: right;"/>Send</button></div><div id="nickList" style=""></div>'
+          message_label_message.innerHTML = 'Joined In - '+txtRoom
+          channel_id = response.data.channel_id
+          client_id = response.data.client_id
+
+          var s = document.createElement("script");
+          s.type = "text/javascript";
+          s.src = "../static/chat.js";
+          // Use any selector
+          document.getElementsByTagName("BODY")[0].append(s);
+      }
+
+      function start_chat() {
+        var txtRoom = document.getElementById('txtRoom').value;
+        var txtNickname = document.getElementById('txtNickname').value;
+        var response = {};
+
+        var data = {
+          'name' : name
+        }
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == XMLHttpRequest.DONE) {
+              response = xhttp.response
+              if(this.status == 200) {
+                response = JSON.parse(response);
+                alert_message.innerHTML = '<strong>'+response.notification.type.toUpperCase()+' - </strong>'+ response.notification.hint
+                document.getElementById("alert-box").classList.add("alert-success");
+                openChatBox(response, txtRoom);
+              } else if (this.status == 400) {
+                response = JSON.parse(response);
+                alert_message.innerHTML = '<strong>'+response.notification.type.toUpperCase()+' - </strong>'+ response.notification.hint
+                document.getElementById("alert-box").classList.add("alert-warning");
+              } else if (this.status == 404) {
+                response = JSON.parse(response);
+                alert_message.innerHTML = '<strong>'+response.notification.type.toUpperCase()+' - </strong>'+ response.notification.hint
+                document.getElementById("alert-box").classList.add("alert-warning");
+              } else {
+                alert_message.innerHTML = '<strong> ERROR - </strong> Something Went Wrong'
+                document.getElementById("alert-box").classList.add("alert-danger");
+              }
+          }
+        }
+        url = host+'?channel='+txtRoom+'&username='+txtNickname
+        xhttp.open("GET", url, true);
+        xhttp.send();
+      }
+
+      function toggle_button() {
+        var txtRoom = document.getElementById('txtRoom').value;
+        var txtNickname = document.getElementById('txtNickname').value;
+        if (txtRoom !='' && txtNickname !='') {
+          document.getElementById("button").disabled = false;
+        }
+        else {
+          document.getElementById("button").disabled = true;
+        }
+      }
+    </script>
+
+  </body>
+</html>

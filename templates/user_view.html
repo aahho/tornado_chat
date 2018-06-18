@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../static/style.css">
+    <link rel="shortcut icon" type="image/png" href="../static/images/chat-logo.png" />
+    <title>Aahho Messenger</title>
+  </head>
+  <body>
+    <div class="card text-center body-alignment">
+      <div class="card-header">
+        <ul class="row nav nav-pills card-header-pills">
+          <li class="nav-item">
+            <a class="nav-link" href="/view/?template=index">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="#">User</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/view/?template=channel_view">Channel</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/view/?template=log_view">Chat</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled nav-button-float-right" href="#">Powered By Aahho</a>
+          </li>
+        </ul>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6 user-view-div">
+            <table class="table" id="user-list-table">
+              <thead class="thead-dark">
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Dispslay Name</th>
+                  <th scope="col">Username</th>
+                  <th scope="col">Joined On</th>
+                </tr>
+              </thead>
+              <tbody id="user-list"></tbody>
+            </table>
+          </div>
+          <div class="col-6">
+            <div class="form-label">
+              <label class="register-message-label">Register Here</label>
+            </div>
+            <form style="padding: 20px; margin-top: 30px;">
+              <div class="col-12" style="margin-bottom: 30px;">
+                <input type="text" id="display_name" onkeyup="toggle_button();" class="text-field" placeholder="Enter Full Name Here" required>
+              </div>
+              <div class="col-md-12" style="margin-bottom: 30px;">
+                <input type="text" id="username" class="text-field" onkeyup="toggle_button();" placeholder="Enter Username Here" required> 
+              </div>
+              <div class="col-12">
+                <button id="button" type="button" class="btn btn-primary col-md-8"  onclick="add_user();" style="font-size: 14px;"> Create User
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="alert-box" class="alert alert-dismissible fade show alert-alignment" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <!-- <span aria-hidden="true">&times;</span> -->
+      </button>
+       <div id="alert-content"></div> 
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="../static/hosts.js"></script>
+    <script>
+      // var host = 'http://127.0.0.1:8080/'
+
+      function get_user() {
+        var xhttp = new XMLHttpRequest();
+        var alert_message = document.getElementById('alert-content');
+        var response = {};
+        document.getElementById("button").disabled = true;
+
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == XMLHttpRequest.DONE) {
+              if(this.status == 200) {
+                response = JSON.parse(xhttp.response);
+                var user_table = document.getElementById('user-list-table').getElementsByTagName('tbody')[0];
+                for (var i = 0; i < response.data.length; i++) {
+                  var row = user_table.insertRow(i);
+                  var date = new Date(response.data[i].created_at);
+                  var text = "<th scope='row'>"+ (i + 1) +'</th>' + "<td>"+response.data[i].display_name + "</td>" + "<td>"+response.data[i].username + "</td>" +"<td>"+date.toLocaleString();+ "</td>"
+                  row.innerHTML = text;
+                }
+                alert_message.innerHTML = '<strong>'+response.notification.type.toUpperCase()+' - </strong>'+ response.notification.message
+                document.getElementById("alert-box").classList.add("alert-success");
+              } else if (this.status == 400) {
+                alert_message.innerHTML = '<strong>'+response.notification.type.toUpperCase()+' - </strong>'+ response.notification.message
+                document.getElementById("alert-box").classList.add("alert-warning");
+              } else {
+                alert_message.innerHTML = '<strong> ERROR - </strong> Something Went Wrong'
+                document.getElementById("alert-box").classList.add("alert-danger");
+              }
+          }
+        }
+        xhttp.open("GET", host+'user/', true);
+        xhttp.send();
+      }
+      window.onload = function(){
+        get_user();
+      };
+
+      function add_user() {
+        var display_name = document.getElementById('display_name').value;
+        var username = document.getElementById('username').value;
+
+        var alert_message = document.getElementById('alert-content');
+        var response = {};
+
+        var data = {
+          'display_name' : display_name,
+          'username' : username
+        }
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == XMLHttpRequest.DONE) {
+              response = xhttp.response
+              if(this.status == 201) {
+                response = JSON.parse(response);
+                alert_message.innerHTML = '<strong>'+response.notification.type.toUpperCase()+' - </strong>'+ response.notification.hint
+                document.getElementById("alert-box").classList.add("alert-success");
+                location.reload()
+              } else if (this.status == 400) {
+                response = JSON.parse(response);
+                alert_message.innerHTML = '<strong>'+response.notification.type.toUpperCase()+' - </strong>'+ response.notification.hint
+                document.getElementById("alert-box").classList.add("alert-warning");
+              } else {
+                alert_message.innerHTML = '<strong> ERROR - </strong> Something Went Wrong'
+                document.getElementById("alert-box").classList.add("alert-danger");
+              }
+          }
+        }
+        xhttp.open("POST", host+'user/', true);
+        xhttp.setRequestHeader('Content-Type', 'application/json');
+        xhttp.setRequestHeader('Accept','application/json');
+        xhttp.send(JSON.stringify(data));
+      }
+
+      function toggle_button() {
+        var display_name = document.getElementById('display_name').value;
+        var username = document.getElementById('username').value;
+
+        if (display_name !='' && username !='') {
+          document.getElementById("button").disabled = false;
+        }
+        else {
+          document.getElementById("button").disabled = true;
+        }
+      }
+    </script>
+  </body>
+</html>

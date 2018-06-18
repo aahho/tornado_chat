@@ -1,0 +1,30 @@
+<script>
+      var host = 'http://127.0.0.1:8080/'
+      var data = []
+
+      function onLoadDocument(){
+          getUserList()
+      }
+
+      function getUserList(){
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) {   // XMLHttpRequest.DONE == 4
+               if (xmlhttp.status == 200) {
+                  //ßßßconsole.log("xmlhttp response",xmlhttp, typeof xmlhttp.response,JSON.parse(xmlhttp.response));
+                  data =  JSON.parse(xmlhttp.response);
+                  console.log("data",data);
+                   //document.getElementById("myDiv").innerHTML = xmlhttp.responseText;
+               }
+               else if (xmlhttp.status == 400) {
+                  alert('There was an error 400');
+               }
+               else {
+                   alert('something else other than 200 was returned');
+               }
+            }
+        };
+        xmlhttp.open("GET", host +"user/", true);
+        xmlhttp.send();
+      }
+    </script>
