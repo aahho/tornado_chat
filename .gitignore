@@ -1,4 +1,5 @@
 *.pyc
 venv
 env.py
-*._
+._*
+.DS_Store
